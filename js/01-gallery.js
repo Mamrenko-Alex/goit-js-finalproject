@@ -17,35 +17,34 @@ function createGalleryItem(items) {
             />
         </a>
     </li>`
-    ).join('')
-}
+    ).join('');
+};
 const galleryMarkup = createGalleryItem(galleryItems);
 
 // Get gallery list
-const galleryList = document.querySelector('.gallery')
+const galleryList = document.querySelector('.gallery');
 
 // Print galery
 galleryList.insertAdjacentHTML('afterbegin', galleryMarkup);
 
 // Create listener
-galleryList.addEventListener('click', handlerCklickOnGallery)
+galleryList.addEventListener('click', handlerCklickOnGallery);
 
 function handlerCklickOnGallery(event) {
-    event.preventDefault()
+    event.preventDefault();
 
     if (event.currentTarget === event.target) {
-        return
+        return;
     }
 
-    const currentImageSource = event.target.dataset.source
-    const currentImage = galleryItems.find(({ original }) => original === currentImageSource)
-    createModalWindow(currentImage)
-
+    const currentImageSource = event.target.dataset.source;
+    const currentImage = galleryItems.find(({ original }) => original === currentImageSource);
+    createModalWindow(currentImage);
 }
 
 function createModalWindow({ preview, original, description }) {
     const instance = basicLightbox.create(
-    `<div class="modal">
+        `<div class="modal">
         <li class="gallery__item">
             <img
             class="gallery__image"
@@ -53,13 +52,21 @@ function createModalWindow({ preview, original, description }) {
             alt="${description}"
             />
         </li>
-    </div>`)
-
+    </div>`,
+    {
+        onShow: (instance) => {
+            document.addEventListener("keydown", handleEscPress);
+        },
+        onClose: (instance) => {
+            document.removeEventListener("keydown", handleEscPress);
+        }
+    });
+    
     instance.show()
 
-    document.addEventListener('keydown', (event) => {
-      if (event.key === 'Escape') {
-        instance.close();
-      }
-    });
-}
+    function handleEscPress(event) {
+        if (event.code === "Escape") {
+            instance.close();
+        };
+    };
+};
